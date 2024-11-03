@@ -38,7 +38,7 @@ dependencies {
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "fr.chaikew.bbapkrebuild.Main"
+        attributes["Main-Class"] = "fr.chaikew.bbapkrebuild.cli.Main"
     }
 
     enabled = true

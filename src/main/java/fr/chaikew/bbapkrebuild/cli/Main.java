@@ -1,9 +1,9 @@
-package fr.chaikew.bbapkrebuild;
+package fr.chaikew.bbapkrebuild.cli;
+
+import fr.chaikew.bbapkrebuild.SinumPatcher;
 
 import java.io.File;
 import java.io.IOException;
-
-import static fr.chaikew.bbapkrebuild.SinumPatcher.sinumPatch;
 
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -34,6 +34,7 @@ public class Main {
         System.out.println("    url port    " + port);
         System.out.println("Waiting 3s for you to review them before continuing...");
         Thread.sleep(3000);
-        sinumPatch(new File(input), new File(output), new File(cache), protocol, host, port);
+
+        new SinumPatcher().sinumPatch(new File(input), new File(output), new File(cache), protocol, host, port);
     }
 }
