@@ -41,3 +41,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Project ###
+cache/
+test.apk
+out.apk
