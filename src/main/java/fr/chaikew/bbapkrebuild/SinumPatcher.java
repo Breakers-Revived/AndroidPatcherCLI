@@ -19,7 +19,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -138,6 +140,7 @@ public final class SinumPatcher {
         final SignerConfig signerConfig = SignerConfig.DEFAULT_CONFIG
                 .withPath(new File(cacheDir, "keystore.bks").getAbsolutePath());
 
+        ArchFilter archFilter = new ArchFilter();
         try (OutputStream os = Files.newOutputStream(outApkTmp.toPath())) {
             try (SignedJar outputApkZ = signerConfig.createSignedJar(os)) {
                 try (ZipFile inputApkZ = new ZipFile(inputApk)) {
@@ -160,6 +163,10 @@ public final class SinumPatcher {
                                 bytes = Files.readAllBytes(patchedDexTmp.toPath());
                             }
 
+                            if (entry.getName().equals("lib/arm64-v8a/libUE4.so")) archFilter.arm64v8a = true;
+                            if (entry.getName().equals("lib/armeabi-v7a/libUE4.so")) archFilter.armeabiv7a = true;
+                            if (entry.getName().equals("lib/x86_64/libUE4.so")) archFilter.x86_64 = true;
+
                             outputApkZ.addFileContents(entry.getName(), bytes, entry.getCompressedSize() != entry.getSize(), true);
                         }
                     }
@@ -167,7 +174,7 @@ public final class SinumPatcher {
 
                 // Append the Sinum native libraries
                 final ClassLoader cl = SinumPatcher.class.getClassLoader();
-                final String[] archs = new String[]{"arm64-v8a", "armeabi-v7a", "x86_64"};
+                final List<String> archs = archFilter.toList();
 
                 for (final String arch : archs) {
                     final String vpath = "sinum/" + arch + "/libsinum.so";
@@ -251,5 +258,19 @@ public final class SinumPatcher {
                 .replace("\n", "")
                 .replace("\r", "")
                 .replace("\"", "\\\"");
+    }
+
+    private static class ArchFilter {
+        public boolean arm64v8a = false;
+        public boolean armeabiv7a = false;
+        public boolean x86_64 = false;
+
+        public List<String> toList() {
+            final List<String> archs = new ArrayList<>();
+            if (this.arm64v8a) archs.add("arm64-v8a");
+            if (this.armeabiv7a) archs.add("armeabi-v7a");
+            if (this.x86_64) archs.add("x86_64");
+            return archs;
+        }
     }
 }
