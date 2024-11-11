@@ -129,8 +129,11 @@ public final class SinumPatcher {
         final File patchedDexTmp = new File(tmpDir, "classes-patched.dex");
         final File outApkTmp = new File(tmpDir, "output.unaligned.apk");
 
-        FileUtils.cleanDirectory(smaliDir);
-        FileUtils.cleanDirectory(smaliDir);
+        if (smaliDir.exists())
+            FileUtils.cleanDirectory(smaliDir);
+
+        if (tmpDir.exists())
+            FileUtils.cleanDirectory(tmpDir);
 
         final SignerConfig signerConfig = SignerConfig.DEFAULT_CONFIG
                 .withPath(new File(cacheDir, "keystore.bks").getAbsolutePath());
